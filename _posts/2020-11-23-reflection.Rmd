@@ -1,0 +1,599 @@
+---
+title: "Post-Election Reflection"
+publish: true
+output:
+  html_document:
+    theme: "cerulean"
+---
+
+```{r packages, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+
+{
+  library(tidyverse)
+  library(plotly)
+  library(ggpubr)
+  library(htmlwidgets)
+  library(googlesheets4)
+  library(janitor)
+  library(knitr)
+  library(kableExtra)
+  library(lubridate)
+}
+
+
+{
+  monochrome <- c('#760000', '#BE1E26', '#D84742', '#FF6B61', '#FF9586')
+  primary <- c('#EE3838', '#FA9E1C', '#78C4D4', '#4B5973', '#E2DDDB')
+  my_red <- '#BE1E26'
+  my_blue <- '#4B5973'
+  sidebysidebarplot <- c("#ef3e3e", "#2c3e50")
+  theme_hodp <- function () { 
+    theme_classic(base_size=12, base_family="Helvetica") %+replace%
+      theme(
+        panel.background  = element_blank(),
+        plot.background = element_blank(),
+        legend.background = element_rect(fill="transparent", colour=NA),
+        legend.key = element_rect(fill="transparent", colour=NA),
+        plot.title = element_text(size=24,  family="Helvetica", face = "bold", 
+                                  margin = margin(t = 0, r = 0, b = 10, l = 0)),
+        plot.subtitle = element_text(size=18,  family="Helvetica", color="#717171", face = "italic", 
+                                     margin = margin(t = 0, r = 0, b = 10, l = 0)),
+        plot.caption = element_text(size=8,  family="Helvetica", hjust = 1),
+        axis.text.x =element_text(size=10,  family="Helvetica"),
+        axis.title.x =element_text(size=14, family="Helvetica", margin = margin(t = 10, r = 0, b = 0, l = 0), 
+                                   face = "bold"),
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), size=14, 
+                                    family="Helvetica", angle=90, face ='bold'),
+        legend.title=element_text(size=10, family="Helvetica"), 
+        legend.text=element_text(size=10, family="Helvetica"),
+        legend.position = "bottom",
+        axis.ticks = element_blank()
+      )
+    }
+}
+
+```
+
+```{r data, message=FALSE, warning=FALSE}
+
+# reading in data with my forecasts
+
+state_pred_compare <- read_csv("../../data/pred_compare.csv")
+sims <- read_csv("../../data/election_simulation_results.csv")
+state_pop_votes <- read_csv("../../data/popvote_bystate_1948-2020.csv") %>% 
+  clean_names() %>% 
+  mutate(state = state.abb[match(state, state.name)],
+         d_pv2p = ifelse(year == 2020, d_pv2p * 100, d_pv2p),
+         r_pv2p = ifelse(year == 2020, r_pv2p * 100, r_pv2p),
+         d_margin = d_pv2p - r_pv2p)
+
+# putting all errors together
+
+errors <- read_csv("../../data/error_538.csv") %>% 
+  mutate(source = "538") %>% 
+  bind_rows(read_csv("../../data/error_economist.csv") %>% mutate(source = "economist"),
+            state_pred_compare %>% select(state, diff) %>% rename("error" = diff) %>% 
+              mutate(source = "me")) %>% 
+  mutate(state = state.abb[match(state, state.name)])
+
+# for maps
+
+{
+  us_map <- map_data("state") %>% 
+  mutate(region = toupper(region),
+    region = state.abb[match(region,  toupper(state.name))])
+}
+
+# data that Prof. Enos told us to use
+
+{
+ enos_data <- read_sheet("https://docs.google.com/spreadsheets/d/1faxciehjNpYFNivz-Kiu5wGl32ulPJhdJTDsULlza5E/edit#gid=0", 
+           col_types = paste0("dcc", paste0(rep("d", times = 39), collapse = ""), collapse = "")) %>% 
+  slice(-1) %>% 
+  unnest(FIPS) %>% 
+  clean_names() %>% 
+  rename("democrat" = joseph_r_biden_jr,
+         "republican" = donald_j_trump,
+         "state" = geographic_name) %>% 
+  select(state, democrat, republican) 
+  
+  enos_pv2p <- enos_data %>% 
+  mutate(democrat = democrat / (democrat + republican) * 100,
+         republican = 100 - democrat,
+         state = state.abb[match(state, state.name)]) %>% 
+  pivot_longer(2:3, names_to = "party", values_to = "actual_pv2p")
+
+  pred <- read_csv("../../data/election_simulation_results.csv") %>% 
+    drop_na() %>% 
+    group_by(state) %>% 
+    mutate(d_pv2p = sim_dvotes_2020 / (sim_rvotes_2020 + sim_dvotes_2020),
+           r_pv2p = 1 - d_pv2p) %>% 
+    summarise(d_pv2p = mean(d_pv2p),
+              r_pv2p = mean(r_pv2p),
+              d_margin = d_pv2p - r_pv2p) %>% 
+    select(1:3) %>% 
+    pivot_longer(d_pv2p:r_pv2p, names_to = "party", values_to = "pred_pv2p") %>% 
+    mutate(party = recode(party, d_pv2p = "democrat",
+                          r_pv2p = "republican"),
+           pred_pv2p = pred_pv2p * 100)
+  
+  enos_pred_compare <- enos_pv2p %>% 
+    inner_join(pred, by = c("state", "party")) %>% 
+    mutate(diff = actual_pv2p - pred_pv2p) %>% 
+    filter(party == "democrat") 
+}
+
+# data with changes over time in each state and most recent numbers in each state
+
+{
+  dat <- read_csv(
+    "https://raw.githubusercontent.com/alex/nyt-2020-election-scraper/master/all-state-changes.csv"
+  ) %>% 
+    mutate(state = str_replace(state, " \\(.*\\)", ""),
+           state = state.abb[match(state, state.name)],
+           timestamp = ymd_hms(timestamp),
+           pct_reported = precincts_reporting / precincts_total * 100) %>% 
+    mutate(trump_votes = case_when(leading_candidate_name == "Trump" ~ leading_candidate_votes,
+                                   TRUE ~ trailing_candidate_votes),
+           biden_votes = case_when(leading_candidate_name == "Biden" ~ leading_candidate_votes,
+                                   TRUE ~ trailing_candidate_votes),
+           trump_pv2p = trump_votes / (biden_votes + trump_votes),
+           biden_pv2p = biden_votes / (biden_votes + trump_votes)) 
+  
+  recent_states <- dat %>% 
+    select(state, timestamp, trump_votes, biden_votes) %>% 
+    group_by(state) %>% 
+    arrange(desc(timestamp)) %>% 
+    slice(1) %>% 
+    ungroup()
+  
+  changes <- dat %>% 
+    pivot_longer(cols = trump_pv2p:biden_pv2p, names_to = "candidate", values_to = "pv2p") %>% 
+    mutate(candidate = recode(candidate, "biden_pv2p" = "Biden",
+                              "trump_pv2p" = "Trump"))
+}
+
+# will use this for shiny input on state linegraphs
+
+{
+  dem_states <- c("CO", "VA", "CA", "CT", "DE", "HI", "IL", "MD", "MA", "NJ", "NY", "OR", "RI", 
+                  "VT", "WA")
+  bg_states <- c("FL", "IA", "OH", "GA", "ME", "NC", "MI", "MN", "NE", "NH", "PA", "WI", 
+                 "NV", "AZ", "NM", "TX")
+  rep_states <- c("AK", "IN", "KS", "MO", "AL", "AR", "ID", "KY", "LA", "MS", "ND", "OK", "SD", "MT",
+                  "TN", "WV", "WY", "SC", "UT")
+  types <- tibble(type = c("Battleground", "Red", "Blue")) %>% 
+    mutate(state = case_when(type == "Battleground" ~ list(bg_states),
+                             type == "Red" ~ list(rep_states),
+                             type == "Blue" ~ list(dem_states)))
+}
+
+```
+
+```{r nat_pv2p}
+
+# calculating the actual national two-party pv
+
+nat_pv2p <- recent_states %>% 
+  summarise(r = sum(trump_votes),
+            d = sum(biden_votes),
+            .groups = "drop") %>% 
+  summarise(d_pv2p = d / (d + r),
+            r_pv2p = r / (d + r),
+            .groups = "drop")
+
+actual_d_pv2p <- nat_pv2p %>% 
+  pull(d_pv2p)
+
+actual_d_pv2p <- round(actual_d_pv2p * 100, 1)
+
+```
+
+
+Just days before the election, my [final forecast](https://kayla-manning.github.io/gov1347/posts/final.html) went against the wisdom of professional forecasters and pollsters alike and projected a rail-thin electoral margin for Joe Biden. While the election results surprised many people on the night of November 3, my probabilistic model produced a point prediction with an even closer race in the electoral college--273 electoral votes for Biden compared to his actual 306--but a wider spread in the popular vote--52.8% compared to his actual `r actual_d_pv2p`%.
+
+### Accuracy and Patterns
+
+The statistical aphorism that "all models are wrong, but some are useful" served as my guiding philosophy in constructing this model. As I discussed in my [final prediction](https://kayla-manning.github.io/gov1347/posts/final.html), I did not expect this model to perfectly forecast all outcomes in the election. Rather, this forecast aimed to provide a range of state-level probabilities and outcomes. Then, I used the most probable state-level popular vote counts to produce point predictions for the Electoral College and national popular vote. While I presented these numbers as my "final prediction", I would have been incredibly shocked if the point predictions perfectly matched the electoral outcomes since my model's probabilities indicated a fair amount of uncertainty.
+
+```{r simulated_outcomes}
+
+# seeing how many times this exact cocktail of wins happened
+
+set.seed(9)
+
+ev_uncertainty <- sims %>% 
+  mutate(biden_win = ifelse(sim_dvotes_2020 > sim_rvotes_2020, 1, 0)) %>% 
+  group_by(state, electoral_votes) %>% 
+  summarise(pct_biden_win = mean(biden_win, na.rm = TRUE), .groups = "drop") %>% 
+  mutate(close = pct_biden_win - .5) %>% 
+  arrange(abs(close)) %>% 
+  select(state, pct_biden_win, electoral_votes) %>% 
+  
+  # simulating 100,000 elections in each state with the given win probabilities
+  
+  slice(rep(1:n(), each = 100000)) %>% 
+  mutate(biden_win = map_int(pct_biden_win, ~ rbinom(1, 1, .)),
+         id = rep(1:100000, times = 50),
+         biden_ev = ifelse(biden_win == 1, electoral_votes, 0),
+         trump_ev = ifelse(biden_win == 0, electoral_votes, 0))
+
+
+# getting list of states that Biden won in each simulation
+
+ev_sim_results <- ev_uncertainty %>% 
+  group_by(id) %>% 
+  mutate(biden_win = as.character(biden_win),
+    biden_win = case_when(biden_win == "1" ~ state)) %>% 
+  drop_na(biden_win) %>% 
+  select(id, biden_win) %>% 
+  nest() %>% 
+  arrange(id)
+
+# states that Joe Biden actually won
+
+actual_wins <- enos_pred_compare %>% 
+  filter(actual_pv2p > 50) %>% 
+  pull(state)
+
+# this exact outcome happened 53 / 100,000 times
+
+times <- ev_uncertainty %>% 
+  filter(biden_win == 1, 
+         state %in% actual_wins) %>% 
+  group_by(id) %>% count() %>% 
+  filter(n == length(actual_wins)) %>% 
+  nrow()
+
+# finding times my point prediction happened
+
+pred_wins <- sims %>% 
+  drop_na() %>% 
+  mutate(biden_win = ifelse(sim_dvotes_2020 > sim_rvotes_2020, 1, 0)) %>% 
+  group_by(state, electoral_votes) %>% 
+  summarise(biden_win = mean(biden_win), .groups = "drop") %>% 
+  filter(biden_win > 0.5) %>% 
+  pull(state)
+
+pred_times <- ev_uncertainty %>% 
+  filter(biden_win == 1, 
+         state %in% pred_wins) %>% 
+  group_by(id) %>% count() %>% 
+  filter(n == length(pred_wins)) %>% 
+  nrow()
+
+```
+
+All in all, I'm quite happy with how this model paralleled with the election outcomes. It only misclassified the winner of GA, NV, and AZ, which were three of the final states called after election night. Even though the forecast indicated that Donald Trump had a greater probability of winning these three states, the vote shares were incredibly close in the simulations, and either candidate had a fair shot of winning: Joe Biden won GA, NV, and AZ in 19.2%, 43.9%, and 20.5% of simulations, respectively. 
+
+Forecasters cannot predict the election outcome with absolute certainty, but models provide a range of possible scenarios. This model successfully anticipated a close Electoral Race with a large popular vote margin, and the actual outcome occurred more than a handful of times in my simulations.
+
+The actual Electoral College outcome, with each candidate winning the exact combination of states that they won on Election Day, occurred in `r times`, or `r round(times / 100000, 3)`, of my simulations. To put that into perspective, the scenario from my point prediction occurred in `r pred_times` of my simulations, which only equates to `r round(pred_times / 100000, 3)`% of my simulations. With a frequentist[^frequentist] interpretation, my forecast may have correctly assigned the probabilities to each outcome and we just happened to observe one of the `r times` scenarios in which each candidate won that exact grouping of states. Unfortunately, only one iteration of each election plays out in the real world, so we cannot determine the true probabilities of each outcome.
+
+```{r compare_states}
+
+# scatterplot of model error
+
+error <- enos_pred_compare %>% 
+  mutate(incorrect = ifelse(state %in% c("AZ", "NV", "GA"), TRUE, FALSE)) %>% 
+  ggplot(aes(pred_pv2p, actual_pv2p,
+             text = paste0("Biden Overperformed in ", state, " by ", round(diff, 3), "%"),
+             color = diff, shape = incorrect)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0) +
+  labs(y = "Actual Democratic Two-Party Popular Vote Share",
+       title = "State-Level Model Error",
+       subtitle = "Negative numbers indicate overestimate of Joe Biden's Vote",
+       x = "Predicted Democratic Two-Party Popular Vote Share",
+       color = "Error = \nActual - Predicted",
+       shape = "Incorrect Prediction?") +
+  theme_hodp() +
+  scale_color_gradient2(low = "#BE1E26", mid = "#E2DDDB", high = "#4B5973",
+                        limits = c(-15, 15), labels = c(-10, 0, 10),
+                        breaks = c(-10, 0, 10))
+
+ggplotly(error, tooltip = c("text", "x", "y", "shape"))
+
+
+# average error... (overestimated Biden's state-level popular votes by an average of 0.392%)
+
+avg_error <- state_pred_compare %>% 
+  pull(diff) %>% 
+  mean() %>% 
+  round(3)
+
+# correlation of 0.9621935 between actual and predicted pv2p
+
+corr <- enos_pred_compare %>% 
+  select(actual_pv2p, pred_pv2p) %>% 
+  cor() %>% 
+  as_tibble() %>% 
+  slice(1) %>% 
+  pull(2)
+
+# root mean squared error of 3.83554
+
+rmse <- enos_pred_compare %>% 
+  mutate(diff = diff^2) %>% 
+  pull(diff) %>% 
+  mean() %>% 
+  sqrt()
+
+# mean error is -0.334
+
+me <- enos_pred_compare %>% 
+  pull(diff) %>% 
+  mean()
+
+```
+
+With a correlation of `r round(corr, 3)` between the actual and the predicted two-party popular vote for each state, the predicted state-level two-party vote shares have a very strong correlation with the actual state-level outcomes. With that said, the inaccuracies do have a couple of distinct patterns:
+
+- On average, Joe Biden underperformed his predicted vote share by `r avg_error` percentage points relative to the forecast. As visible in the below scatterplot, Joe Biden's actual vote share fell short of the model's predictions in the Democrat-leaning states and exceeded the predicted vote share in the Republican-leaning states.
+
+- Despite overpredicting Joe Biden's vote share in most states, the model *underestimated* Joe Biden's performance in the only three misclassified states. Essentially, the model overestimated Joe Biden's vote share in general but underestimated it in the states with incorrect point predictions.
+
+The below maps illustrate the areas with the greatest error. Notice that safe blue and red states such as New York and Louisiana have relatively large errors, while battleground states such as Texas and Ohio have extremely slim errors. For a closer look at the data, the included table contains all of the actual and predicted two-party vote shares for Joe Biden, ordered by the magnitude of the error:
+
+## {.tabset}
+
+### Predicted Actual Results
+
+```{r results_maps}
+
+pred_map <- ggplotly(state_pred_compare %>% 
+  left_join(us_map, by = c("state" = "region")) %>% 
+  ggplot(aes(long, lat, group = group, text = paste0("Biden's Predicted Two-Party \nVote Share in ", 
+                                                     state, ": ", round(pred_pv2p, 3), "%"))) +
+  geom_polygon(aes(fill = pred_pv2p)) +
+  scale_fill_gradient2(low = "#BE1E26", high = "#4B5973",
+                       midpoint = 50,
+                       breaks = c(30, 50, 70),
+                       labels = c(30, 50, 70),
+                       limits = c(25, 75)) +
+  coord_map() +
+  labs(x = "",
+       y = "",
+       fill = "Biden's Two-Party \nVote Share",
+       title = "Predicted Vote Shares") +
+  theme_hodp() +
+  theme(axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.text.x = element_blank()),
+  tooltip = "text")
+
+actual_map <- ggplotly(state_pred_compare %>% 
+  left_join(us_map, by = c("state" = "region")) %>% 
+  ggplot(aes(long, lat, group = group, text = paste0("Biden's Actual Two-Party \nVote Share in ", 
+                                                     state, ": ", round(actual_pv2p, 3), "%"))) +
+  geom_polygon(aes(fill = actual_pv2p)) +
+  scale_fill_gradient2(low = "#BE1E26", high = "#4B5973",
+                       midpoint = 50,
+                       breaks = c(30, 50, 70),
+                       labels = c(30, 50, 70),
+                       limits = c(25, 75)) +
+  coord_map() +
+  labs(x = "",
+       y = "",
+       fill = "Biden's Two-Party \nVote Share",
+       title = "Predicted Versus Actual Results") +
+  theme_hodp() +
+  theme(axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.text.x = element_blank()),
+  tooltip = "text")
+
+subplot(pred_map, actual_map, nrows = 2)
+
+```
+
+### Error Map
+
+```{r error_map}
+
+# creating error map
+
+ggplotly(state_pred_compare %>% 
+  left_join(us_map, by = c("state" = "region")) %>% 
+  ggplot(aes(long, lat, group = group, text = paste0("Difference between actual and \npredicted vote shares in ", 
+                                                     state, ": ", round(diff, 3), "%"))) +
+  geom_polygon(aes(fill = diff)) +
+  scale_fill_gradient2(low = my_red, mid = "white", high = my_blue,
+                       midpoint = 0, limits = c(-14, 14), labels = c(-10, 0, 10),
+                       breaks = c(-10, 0, 10)) +
+  coord_map() +
+  labs(x = "",
+       y = "",
+       fill = "Difference Between Biden's \nActual and Predicted \nTwo-Party Vote Share",
+       title = "Forecast Error") +
+  theme_hodp() +
+  theme(axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.text.x = element_blank()),
+  tooltip = "text") %>% 
+ layout(annotations = 
+          list(x = 1, y = -0.1, text = "Red indicates that Trump received a greater share of votes than predicted.", 
+               showarrow = F, xref='paper', yref='paper', 
+               xanchor='right', yanchor='auto', xshift=80, yshift=40,
+               font=list(size=15))
+ )
+
+```
+
+##
+
+```{r state_error}
+
+# creating a table with the actual and predicted state-level vote shares alongside the errors
+
+scroll_box(state_pred_compare %>% 
+  select(state, actual_pv2p, pred_pv2p, diff) %>% 
+  arrange(desc(abs(diff))) %>% 
+  kable(col.names = c("State", "Actual Democratic Two-Party Vote Share", 
+        "Predicted Democratic Two-Party Vote Share", "Error")) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover")),
+  height = "200px")
+
+```
+
+Since this model was not unilaterally biased like most other forecast models, this model's average error is considerably closer to zero than other popular forecasts, and the errors are more normally distributed around zero:
+
+## {.tabset}
+
+### Comparison Summary Statistics
+
+```{r compare_stats}
+
+{
+  # RMSE
+
+  error_rmse <- errors %>% 
+    group_by(source) %>% 
+    summarise(rmse = sqrt(mean(error^2)),
+              .groups = "drop")
+  
+  # mean error
+  
+  mean_error <- errors %>% 
+    group_by(source) %>% 
+    summarise(mean_error = mean(error),
+              .groups = "drop")
+  
+  # classification accuracy
+  
+  tibble(source = c("538", "economist", "me"), 
+         class_acc = c(96, 96, 94),
+         missed = c("FL, NC", "FL, NC", "AZ, GA, NV")) %>% 
+    inner_join(error_rmse, by = "source") %>% 
+    inner_join(mean_error, by = "source") %>% 
+    arrange(desc(mean_error)) %>% 
+    select(source, mean_error, rmse, class_acc, missed) %>% 
+    mutate(source = recode(source, "538" = "FiveThirtyEight",
+                           "economist" = "The Economist",
+                           "me" = "Kayla Manning")) %>% 
+    kable(col.names = c("Model", "Mean Error", "Root Mean Squared Error", 
+                        "Classification Accuracy", "Missed States")) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
+}
+
+
+```
+
+### Error Histograms
+
+```{r compare_hist}
+
+# generating histograms
+
+ggplotly(errors %>% 
+  mutate(source = recode(source, "538" = "FiveThirtyEight",
+         "economist" = "The Economist",
+         "me" = "Kayla Manning"),
+         source = fct_relevel(as_factor(source), "Kayla Manning")) %>% 
+  ggplot(aes(error)) +
+  geom_density(fill = my_red, alpha = 0.5) +
+  geom_histogram(aes(y = after_stat(count / sum(count))), bins = 13, fill = my_red) + 
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  facet_wrap(~ source) +
+  labs(x = "Difference Between Biden's Actual and Predicted \nTwo-Party Vote Share",
+       y = "Count",
+       title = "Error Distributions by Forecast") +
+  theme_hodp() +
+  scale_x_continuous(limits = c(-15, 15))) 
+
+```
+
+##
+
+### Hypotheses for Inaccuracies: Partisan Shifts in Vote Share and Voter Registration
+
+As with any forecast model that incorporated polls, this forecast would have benefited from improved polling accuracy. Unfortunately, I do not control the polling methodology, so I must improve my model in other ways. To minimize the impact of polling biases, I applied an aggressive weighting scheme based on FiveThirtyEight's pollster grades.[^weights] Despite these efforts, the model still produced extreme predictions in either direction, with more favorable predictions for Biden in the liberal states and more favorable predictions for Trump in conservative states. Since this model did not have a unilateral bias, I do not think polling inaccuracy is the sole culprit of my model's shortcomings. 
+
+One hypothesis is that this model should have done a better job of detecting recent **partisan shifts in vote share** within the state. While the model did include lagged vote share, it did not indicate which direction a state was trending. For example, Texas voted for Trump in 2016, but the model did not know that Texas has been trending blue in recent years. The demographic variables included in my model served as a sort of proxy for such shifts, but the model did not directly include the recent partisan trends within each state. If this were the case, it would make sense why the model produced more spread out results than what played out in reality.
+
+Does this hypothesis make sense in the context of the data we have? The model neglected to pick up on the magnitude of changing views in states such as Arizona and Georgia, both of which voted for Trump in 2016 yet voted for Biden in 2020 and were misclassified by this model.[^good-shifts] In addition to Georgia and Arizona, New York--the state with the largest prediction error--also followed the momentum of a 2016 partisan shift toward the center:
+
+```{r state_swings}
+
+# making linegraph to show the partisan shifts over time
+
+preds <- tibble(state = c("AZ", "GA", "NY"),
+                diff = c(-5.31, -5.97, 39.2),
+                tie = rep(0, times = 3)) %>% 
+  pivot_longer(cols = 2:3, names_to = "type")
+
+state_pop_votes %>% 
+  filter(state %in% c("AZ", "GA", "NY"),
+         year %in% seq(2000, 2020, by = 4)) %>% 
+  mutate(pred_diff = case_when(state == "AZ" ~ -5.31,
+                               state == "GA" ~ -5.97,
+                               state == "NY" ~ 39.2)) %>% 
+  ggplot(aes(year, d_margin, color = d_margin, group = pred_diff)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ state) +
+  coord_flip() +
+  geom_hline(data = preds, aes(yintercept = value, linetype = type),
+             show.legend = TRUE) +
+  scale_color_gradient(low = my_red, high = my_blue) +
+  theme_hodp() +
+  labs(title = "Partisan Shifts Since 2000",
+       y = "Democratic Two-Party Vote-Share Margin",
+       x = "",
+       caption = "The dotted line indicates the predicted democratic margin. Notice that none of \nthe predictions follow the trend between 2012 and 2016.") +
+  theme(legend.position = "none",
+        axis.title.x = element_text(margin = margin(10, 0, 10, 0))) +
+  scale_y_continuous(limits = c(-40, 40)) +
+  scale_x_continuous(breaks = seq(2000, 2020, by = 4),
+                     labels = seq(2000, 2020, by = 4)) +
+  scale_linetype_manual(name = "type",
+                        values = c(3, 1),
+                        labels = c("Predicted Margin", "Tie"),
+                        breaks = c("diff", "tie"))
+
+```
+
+The above graphs indicate that the predictions did not align with the states' recent partisan trends in the two-party vote share. To account for this in 2024 and beyond, I could include a variable that captures the difference in the democratic party's two-party vote share between the two most recent elections. In this model, I attempted to use demographic changes as a proxy for this, but a more direct variable might work better.
+
+If the trending vote shares hypothesis does not withstand quantitative assessment, I could explore other variables that measure partisan trends through other means. Changes in party registration would also pick up on changes in partisanship within a state. One benefit of party registration is that there is that we have data for every year rather than every four years, which means the model could look at 2020 data rather than try to project from 2016. To include voter registration in the models, I could incorporate the change in Democratic voters' percentage of the electorate from the previous election year. For example, if Democrats comprised 40% of Texas registered voters in 2016 and 45% of Texas registered voters in 2020, then the difference would be $0.45 - 0.40 = 0.05$.
+
+### Proposed Test to Assess Hypotheses: Assess New Models with Additional Variables
+
+To assess my vote share trend hypothesis, I would follow the same procedures as outlined in my [final prediction](https://kayla-manning.github.io/gov1347/posts/final.html) to reconstruct the model with the additional variable. Once I have constructed this model, I would follow a series of steps to assess its validity:
+
+1. First and foremost, I would assess the statistical significance of the partisan change coefficients for each of the pooled models.
+2. Then, I would assess the out-of-sample fit with a leave-one-out cross-validation and compare the classification accuracy to my official 2020 forecast. If the overall accuracy is approximately equal, I would look at the yearly breakdowns and favor the model that performed better in the three most recent elections.
+3. Finally, I would forecast the 2020 results using this year's data[^forecast-polls] and compare this model's 2020 forecast to my previous model. 
+
+These assessments should provide enough metrics to determine if this new model performs better or worse than my original model in in-sample and out-of-sample validation. If this new model performed better than the original model on at least two out of these three measures, then I know that the absence of that particular variable introduced a weakness to my original model. However, if my previous model performed better or approximately the same on these measures, then I would stick with my original, more parsimonious model for the future.
+
+To assess the validity of my voter registration hypothesis, I would follow the steps outlined above, but with the variable that captures the change in Democratic voter registration in the place of the voting shift variable. If both of these new models perform better than the original model, I would follow the same process to assess the strength of an additional model that contains both variables.
+
+### Improvements for Future Iterations
+
+Aside from the absence of the aforementioned variables to capture partisan trends within states, I also plan to make several methodological changes to this model for the future. I touched on many of these in greater detail in my [final prediction](https://kayla-manning.github.io/gov1347/posts/final.html) post, but here is a brief overview:
+
+- This model does not include Washington D.C., so I manually added its 3 electoral votes after forecasting the vote shares for the 50 states. Ideally, I would find the necessary data to include D.C. in my forecast.
+- Also due to the absence of appropriate data, this model allocates the electoral votes from Maine and Nebraska on a winner-take-all basis rather than following the congressional district method, as they do in reality. Again, future iterations would ideally include district-level data for these states.
+- I need to improve my methodology for varying voter turnout and probabilities:
+  * This model varied voter turnout and partisan probabilities independently by drawing from a normal distribution. A more sophisticated model in the future would introduce some correlation between geographies, demographic groups, and ideologies. 
+  * Moreover, since I drew these probabilities from a normal distribution, some states could have negative probabilities if the initial probability for voting for a particular party was extremely low (e.g. voting Republican in Hawaii). I took the absolute value of these draws to ensure all probabilities were positive, but this introduced some extreme variation in states that had an extremely low probability of voting for one party. For example, the confidence intervals for Republican votes in Hawaii were unrealistically wide since the negative vote probabilities became positive probabilities different from the positive values in the normal distributions. I must find a better method to restrict the domain in future iterations of this model.
+- Lastly, I classified states based on their 2020 ideologies. In the future, I would like to set a rule for classifying each state for every election, rather than relying solely on the 2020 classification by the [New York Times](https://www.nytimes.com/interactive/2020/us/elections/electoral-college-battleground-states.html). For example, this model considered Colorado as a "blue state" for all years based on its 2020 classification, but it was either a "red state" or "battleground state" in most of the previous elections in the data. In its current condition, the "blue state" model was constructed with all Colorado data from 1992-2018. Ideally, I would use Colorado data from the years it was considered a "battleground state" to construct the "battleground" model, the years it was a "red state" to construct the "red" model, and the years it was a "blue state" to construct the "blue" model.
+
+### Conclusion
+
+While my forecast failed to predict the election outcomes with absolute precision, this model correctly projected a relatively close race in the Electoral College with a larger margin in the popular vote. Furthermore, the outcomes of November 3 all reasonably match the vote shares and win probabilities estimated by the model. Even in GA, NV, and AZ--the three misclassified states--the actual vote shares were not too far from the predictions, and the simulations gave both candidates a fair probability of winning all three of those states. Despite having predicted this election exceptionally well, I hypothesize that this model's failure to capture partisan trends within states led to the shortcomings in the predictions.
+
+---------------------------------------------------------------------
+
+[^frequentist]: Unlike rolling dice, we cannot experience multiple occurrences of the same election to uncover the true probability of each event. Frequentist probability describes the relative frequency of an event in many trials; conducting many simulations in my model took a frequentist approach to uncover the probability of each outcome. However, we can never really know if any of the probabilities were correct because the 2020 election only happened once (thank goodness!). Trying to say whether or not a probabilistic forecast was *correct* is like rolling a "six" on a single die and concluding that your prior probabilities of 1/6 for rolling a 6 and 5/6 for rolling anything else were incorrect because you observed the less probable outcome on a single iteration.
+
+[^good-shifts]: However, any changes would have to keep in mind that FL, OH, WI, etc. were more conservative than most forecasts anticipated, and this model correctly anticipated the winner in these highly contentious battleground states.
+
+[^forecast-polls]: To remain consistent with my final forecast, I would not use polls from after 3 PM EST on November 1, which is the last time I used FiveThirtyEight's state-level polling data for my original model.
+
+[^weights]: I explain my weighting scheme in further detail in my [final prediction](https://kayla-manning.github.io/gov1347/posts/final.html), but I essentially took a weighted average of each state's polling numbers, favoring polls with higher grades by much more than polls with lower grades.
+
