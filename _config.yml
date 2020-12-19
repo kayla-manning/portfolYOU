@@ -2,7 +2,7 @@
 title               : portfolYOU
 description         : >-
                       Statistics & Government // Harvard 2022
-baseurl             : ""                     
+baseurl             : "/about"                     
 repository          : kayla-manning/kayla-manning.github.io   
 remote_theme        : YoussefRaafatNasry/portfolYOU
 
