@@ -1,8 +1,8 @@
 ### Site Settings ###
-title               : portfolYOU
+title               : Kayla Manning
 description         : >-
                       Statistics & Government // Harvard 2022
-baseurl             : "/about"                     
+baseurl             : ""                     
 repository          : kayla-manning/kayla-manning.github.io   
 remote_theme        : YoussefRaafatNasry/portfolYOU
 
