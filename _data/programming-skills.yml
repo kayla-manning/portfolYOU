@@ -4,12 +4,20 @@
 
 - name: Python
   percentage: 40
-  color: secondary
+  color: info
 
 - name: C
   percentage: 40
   color: danger
 
-- name: HTML / CSS/ JavaScript
+- name: HTML
+  percentage: 25
+  color: warning
+  
+- name: CSS
+  percentage: 25
+  color: warning
+  
+- name: JavaScript
   percentage: 25
   color: warning

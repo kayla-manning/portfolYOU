@@ -4,8 +4,8 @@
   
 - name: Salesforce
   percentage: 75
-  color: secondary
+  color: info
   
 - name: Italian
   percentage: 40
-  color: info
+  color: 
