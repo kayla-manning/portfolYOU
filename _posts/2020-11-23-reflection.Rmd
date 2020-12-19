@@ -1,9 +1,11 @@
 ---
 title: "Post-Election Reflection"
-publish: true
+tags: [Election 2020, Data]
+style: border
+color: primary
+description: After a brief exploration of the relationship between COVID-19 and polls, an updated model provides state-by-state predictions.
 output:
-  html_document:
-    theme: "cerulean"
+  html_document
 ---
 
 ```{r packages, include=FALSE}
