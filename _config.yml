@@ -1,11 +1,9 @@
 ### Site Settings ###
 title               : portfolYOU
 description         : >-
-                      I turn coffee :coffee: into code,
-                      use tabs over spaces
-                      and never broke production.
-baseurl             : "/portfolYOU"                     # Change to empty quotes if you are hosting your site at <your-username>.github.io directly
-repository          : YoussefRaafatNasry/portfolYOU     # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects)
+                      Statistics & Government // Harvard 2022
+baseurl             : ""                     
+repository          : kayla-manning/kayla-manning.github.io   
 remote_theme        : YoussefRaafatNasry/portfolYOU
 
 
@@ -24,24 +22,24 @@ nav_exclude:                                            # The following paths ar
 
 ### Author Info ###
 author:
-  name              : John Doe
-  image             : https://i.imgur.com/uyDNQnn.jpg
-  behance           : your_username
+  name              : Kayla Manning
+  image             : https://avatars0.githubusercontent.com/u/60484294?s=460&u=9c583e3af243160609b948fa730ed783158a1877&v=4
+# behance           : your_username
 # dribbble          : your_username
-  email             : username@domain.com
-  facebook          : your_username
-  github            : your_username
+  email             : kaylamanning@college.harvard.edu
+# facebook          : your_username
+  github            : kayla-manning
 # gitlab            : your_username
-# instagram         : your_username
+  instagram         : kayla.manning
 # kaggle            : your_username
-  linkedin          : your_username
-  medium            : your_username
+  linkedin          : kayla-manning
+# medium            : your_username
 # soundcloud        : your_username
 # spotify           : your_username
 # stackoverflow     : your_user_id
 # tumblr            : your_username.tumblr.com
 # twitch            : your_username
-  twitter           : your_username
+# twitter           : your_username
 # vimeo             : your_username
 # youtube           : your_channel_name
 # keybase           : your_username
