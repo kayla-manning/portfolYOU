@@ -1,11 +1,11 @@
-- name: Salesforce
-  percentage: 75
-  color: info
-
 - name: Microsoft Office
   percentage: 90
   color: success
   
+- name: Salesforce
+  percentage: 75
+  color: secondary
+  
 - name: Italian
   percentage: 40
-  color: success
+  color: info

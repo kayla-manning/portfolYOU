@@ -1,15 +1,15 @@
 - name: R
   percentage: 95
-  color: danger
+  color: success
 
 - name: Python
   percentage: 40
-  color: info
+  color: secondary
 
 - name: C
   percentage: 40
-  color: info
+  color: danger
 
 - name: HTML / CSS/ JavaScript
   percentage: 25
-  color: dark
+  color: warning
