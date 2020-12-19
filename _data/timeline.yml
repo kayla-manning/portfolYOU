@@ -1,17 +1,26 @@
-- title: Student, Harvard CS
-  from: 2014
-  to: 2018
-  description: Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-               sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-               Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-               nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-               reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+- title: Student, Harvard Statistics and Government
+  from: September 2018
+  to: December 2022
+  description: - Mindich Course Fellow, GOV 50 Data
+              - Contributing Writer, Harvard Open Data Project
+              - Student Advisory Board Member, Harvard Memorial Church
+              - Peer Counselor, Harvard Eating Concerns Hotline and Outreach
+              - Student-Faculty Committee on Dining Member
 
-- title: Software Engineer, Google, UK
-  from: 2018
-  to: present
-  description: Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-               sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-               Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-               nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-               reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+- title: Social Solutions Global
+  from: September 2019
+  to: January 2020
+  description: - Customer and Prospect Database Intern
+              - Researched competitors and high-potential markets in the nonprofit data management space.
+              - Compiled and wrote internal reports assessing market potential of client bases for the Senior Leadership Team.
+              - Cleaned, merged, and analyzed client datasets in R programming language for the Product and Data Science teams.
+              
+- title: Vista Equity Partners
+  from: June 2020
+  to: August 2020
+  description: - Summer Analyst, Capital and Partner Solutions
+              - Compile information and conduct detailed quantitative analysis in response to data intensive investor requests.
+              - Perform research on the technology and software industry and macroeconomic data for the Quarterly Investor Letter.
+              - Prepare investor profiles, agendas, and any additional research and briefing documentation required in advance of meetings.
+              - Manage fundraising pipeline(s) to ensure all interaction is tracked and due diligence follow-up processes are maintained.
+              - Prepare research and materials to be used by senior investor relations and management team members for strategic initiatives.
