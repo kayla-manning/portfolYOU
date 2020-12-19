@@ -12,7 +12,7 @@
 #   color : 444444
 
 email:
-  url   : "mailto:kaylamanning@college.harvard.edu"
+  url   : "mailto:"
   icon  : fas fa-envelope
   color : db4437
 
@@ -22,7 +22,7 @@ email:
 #   color : 3b5998
 
 github:
-  url   : https://www.github.com/kayla-manning
+  url   : https://www.github.com/
   icon  : fab fa-github
   color : 333333
 
@@ -32,7 +32,7 @@ github:
 #   color : fca326
 
 instagram:
-  url   : https://www.instagram.com/kayla.manning
+  url   : https://www.instagram.com/
   icon  : fab fa-instagram
   color : 405de6
   
@@ -42,7 +42,7 @@ instagram:
 #   color : 20beff
 
 linkedin:
-  url   : https://www.linkedin.com/in/kayla-manning
+  url   : https://www.linkedin.com/in/
   icon  : fab fa-linkedin-in
   color : 007bb5
 
