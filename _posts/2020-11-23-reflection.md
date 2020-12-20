@@ -20,7 +20,7 @@ Forecasters cannot predict the election outcome with absolute certainty, but mod
 
 The actual Electoral College outcome, with each candidate winning the exact combination of states that they won on Election Day, occurred in 53, or 0.001, of my simulations. To put that into perspective, the scenario from my point prediction occurred in 5080 of my simulations, which only equates to 0.051% of my simulations. With a frequentist[^frequentist] interpretation, my forecast may have correctly assigned the probabilities to each outcome and we just happened to observe one of the 53 scenarios in which each candidate won that exact grouping of states. Unfortunately, only one iteration of each election plays out in the real world, so we cannot determine the true probabilities of each outcome.
 
-![Figure 1](figures/reflection/error.jpeg)
+![Figure 1](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/reflection/error.jpeg)
 
 With a correlation of 0.961 between the actual and the predicted two-party popular vote for each state, the predicted state-level two-party vote shares have a very strong correlation with the actual state-level outcomes. With that said, the inaccuracies do have a couple of distinct patterns:
 
@@ -30,8 +30,8 @@ With a correlation of 0.961 between the actual and the predicted two-party popul
 
 The below maps illustrate the areas with the greatest error. Notice that safe blue and red states such as New York and Louisiana have relatively large errors, while battleground states such as Texas and Ohio have extremely slim errors. The full blog post contains a table that lists all of the actual and predicted vote shares for each state.
 
-![Comparison Maps](figures/reflection/two_maps.jpeg)
-![Error Map](figures/reflection/error_map.jpeg)
+![Comparison Maps](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/reflection/two_maps.jpeg)
+![Error Map](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/reflection/error_map.jpeg)
 
 Since this model was not unilaterally biased like most other forecast models, this model’s average error is considerably closer to zero than other popular forecasts, and the errors are more normally distributed around zero:
 
@@ -41,7 +41,7 @@ Since this model was not unilaterally biased like most other forecast models, th
 | The Economist 	| -2.331 	| 2.804 	| 96% 	| FL, NC 	|
 | FiveThirtyEight 	| -2.445 	| 3.019 	| 96% 	| FL, NC 	|
 
-![Model Histograms](figures/reflection/model_histograms.jpeg)
+![Model Histograms](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/reflection/model_histograms.jpeg)
 
 ### Hypotheses for Inaccuracies: Partisan Shifts in Vote Share and Voter Registration
 
@@ -51,7 +51,7 @@ One hypothesis is that this model should have done a better job of detecting rec
 
 Does this hypothesis make sense in the context of the data we have? The model neglected to pick up on the magnitude of changing views in states such as Arizona and Georgia, both of which voted for Trump in 2016 yet voted for Biden in 2020 and were misclassified by this model.[^good-shifts] In addition to Georgia and Arizona, New York–the state with the largest prediction error–also followed the momentum of a 2016 partisan shift toward the center:
 
-![State-Level Shifts](figures/reflection/partisan_shifts.png)
+![State-Level Shifts](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/reflection/partisan_shifts.png)
 
 The above graphs indicate that the predictions did not align with the states’ recent partisan trends in the two-party vote share. To account for this in 2024 and beyond, I could include a variable that captures the difference in the democratic party’s two-party vote share between the two most recent elections. In this model, I attempted to use demographic changes as a proxy for this, but a more direct variable might work better.
 
