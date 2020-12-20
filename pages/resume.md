@@ -11,6 +11,6 @@ weight: 3
   <title>Kayla's Resume</title>
 </head>
   <body style="width:100%; height:100%; margin:0;">
-    <embed src="https://docs.google.com/gview?url=https://github.com/kayla-manning/kayla-manning.github.io/raw/master/pages/k_manning_resume.pdf&embedded=true" width = "100%" height = "100%" </embed>
+    <iframe src="https://docs.google.com/gview?url=https://github.com/kayla-manning/kayla-manning.github.io/raw/master/pages/k_manning_resume.pdf&embedded=true" width = "100%" height = "100%" frameborder="0"></iframe>
   </body>
 </html>
