@@ -5,9 +5,6 @@ permalink: /about/
 weight: 3
 ---
 
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Roboto&display=swap" rel="stylesheet">
-
 # **About Me**
 
 Hi, I am **{{ site.author.name }}** :wave:,<br>
