@@ -21,6 +21,7 @@ Forecasters cannot predict the election outcome with absolute certainty, but mod
 The actual Electoral College outcome, with each candidate winning the exact combination of states that they won on Election Day, occurred in 53, or 0.001, of my simulations. To put that into perspective, the scenario from my point prediction occurred in 5080 of my simulations, which only equates to 0.051% of my simulations. With a frequentist[^frequentist] interpretation, my forecast may have correctly assigned the probabilities to each outcome and we just happened to observe one of the 53 scenarios in which each candidate won that exact grouping of states. Unfortunately, only one iteration of each election plays out in the real world, so we cannot determine the true probabilities of each outcome.
 
 ![Figure 1](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/reflection/error.jpeg)
+{% include 'figures/reflection/error_plot.html' %}
 
 With a correlation of 0.961 between the actual and the predicted two-party popular vote for each state, the predicted state-level two-party vote shares have a very strong correlation with the actual state-level outcomes. With that said, the inaccuracies do have a couple of distinct patterns:
 
