@@ -56,8 +56,8 @@ Next, I wanted to extend the analysis one step further and run the same regressi
 
 The below plots provide a clearer visualization of this positive association between COVID-19 and Trump’s 2020 vote share within battleground states. The regressions control for 2016 vote share when regressing the 2020 vote share from COVID deaths. To illustrate the multivariate relationship between the variables in these plots, the y-axis displays the difference between 2020 and 2016 vote share. Controlling[^controls] for 2016 vote share in the regression isolates the impact of COVID on 2020’s vote share since it looks specifically at the changes in voting patterns rather than absolute vote share in 2020:
 
-![state-regression-plot](state_covid_plot.jpg)
-![county-regression-plot](county_covid_plot.jpg)
+![state-regression-plot](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/narrative/state_covid_plot.jpg)
+![county-regression-plot](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/narrative/county_covid_plot.jpg)
 
 ### Forecasting a hypothetical, COVID-free 2020
 
@@ -70,7 +70,7 @@ COVID-19 bled into the polling and economic data used for the predictions, so I 
 
 I used a very similar[^model-changes] model equation to that from my [final forecast](https://kayla-manning.github.io/gov1347/posts/final.html). In this hypothetical, pandemic-free world, Trump lost both the Electoral College and the national two-party popular vote by an even larger margin than what panned out on the actual election day and what was predicted in my final prediction:
 
-![covid-free-map](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/narrative/covid_free_map.jpg)
+![covid-free-map](https://raw.githubusercontent.com/kayla-manning/kayla-manning.github.io/master/_posts/figures/narrative/covid_free_map.png)
 
 | Type 	| Biden Electoral Votes 	| Trump Electoral Votes 	| Biden Two-Party Popular Vote 	| Trump Two-Party Popular Vote 	|
 |:-:	|:-:	|:-:	|:-:	|:-:	|
@@ -99,4 +99,4 @@ The possibility of a positive association between Trump’s vote share and the i
 
 [^poll-weeks]: While this includes some data from after COVID-19 came to the United States, I had to expand the window of time to get a large enough sample size of polls for each state. The model would not run if I restricted the polling window to before the pandemic came to the US.
 
-[^model-changes]: I added an interaction term to the model from my original forecast for this iteration. In retrospect, it did not make sense to not include it in the first place since the state of the economy likely has opposite effects for incumbent and non-incumbent candidates. The final equation used to predict ŷ , the probability of voting for the Democratic or Republican candidate within each state, in this updated model is <img src="https://render.githubusercontent.com/render/math?math=\hat{y} = \text{incumbent} %2A \text{gdp_growth_qt} %2B \text{avg_state_poll} %2B \text{prev_dem_margin} %2B \text{black_change} %2B \text{age20_change} %2B \text{age65_change})">.
+[^model-changes]: I added an interaction term to the model from my original forecast for this iteration. In retrospect, it did not make sense to not include it in the first place since the state of the economy likely has opposite effects for incumbent and non-incumbent candidates. The final equation used to predict ŷ , the probability of voting for the Democratic or Republican candidate within each state, in this updated model is <img src="https://render.githubusercontent.com/render/math?math=\hat{y} = \text{incumbent} %2A \text{gdp_growth_qt} %2B \text{avg_state_poll} %2B \text{prev_dem_margin} %2B \text{black_change} %2B \text{age20_change} %2B \text{age65_change})">
