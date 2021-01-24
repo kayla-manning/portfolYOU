@@ -1,37 +1,54 @@
 - title: Student, Harvard Statistics and Government
   from: September 2018
   to: December 2022
-  description: "* Mindich Course Fellow, GOV 50 Data
-  
-              * Contributing Writer, Harvard Open Data Project
-              
-              * Student Advisory Board Member, Harvard Memorial Church
-              
-              * Peer Counselor, Harvard Eating Concerns Hotline and Outreach
-          
-              * Student-Faculty Committee on Dining Member"
+  description: "Harvard Government Department Research & Course Assistant. Harvard Open Data Project 
+                Contributor. Eating Concerns Hotline & Outreach (ECHO) Peer Counselor. Memorial 
+                Church Student Advisory Board Member. Student-Faculty Committee on Dining 
+                Representative. Leadership Institute of Harvard College Finance and Communications 
+                Chair. Smart Woman Securities Associate."
+                
 - title: Research Assistant, Partisan Segregation Project
   from: January 2021
   to: present
-  description: "As part of this project, I match voter file lists with election data as part of a larger project with the intent to measure and map segregation between partisans at any level of geography in the United States.
+  description: "As part of this project, I match voter file lists with election 
+                data as part of a larger project with the intent to measure and map 
+                segregation between partisans at any level of geography in the United States.
+                This project allows me to expand upon my existing data wrangling, web scraping, 
+                and other big data skills in R."
 
-                This project allows me to expand upon my existing data wrangling, web scraping, and other big data skills in R."
-              
-- title: Vista Equity Partners
+- title: Course Assistant, GOV 50 Data
+  from: August 2020
+  to: December 2020
+  description: "I worked as a course assistant for GOV 50, an introductory data science course 
+                in tidyverse R that culminates in a large final project in which students 
+                create Shiny apps to display their own analysis of a large dataset that they 
+                sourced and cleaned. As a Mindich Course Fellow, I connected students with policymakers, 
+                nonprofits, or other stakeholders to maximize the impact of their work. In addition to my 
+                unique roles for the fellowship program, I also provided assistance in lectures 
+                and held regular office hours."
+                
+- title: Summer Analyst, Vista Equity Partners
   from: June 2020
   to: August 2020
-  description: "* Summer Analyst, Capital and Partner Solutions
-              * Compile information and conduct detailed quantitative analysis in response to data intensive investor requests.
-              * Perform research on the technology and software industry and macroeconomic data for the Quarterly Investor Letter.
-              * Prepare investor profiles, agendas, and any additional research and briefing documentation required in advance of meetings.
-              * Manage fundraising pipeline(s) to ensure all interaction is tracked and due diligence follow-up processes are maintained.
-              * Prepare research and materials to be used by senior investor relations and management team members for strategic initiatives."
+  description: "In this role, I spent a large portion of my time preparing research and 
+                materials for the senior investor relations and management team members for strategic 
+                initiatives. On top of that, I prepared investor profiles, agendas, and any additional 
+                research and briefing documentation required in advance of meetings. Since Vista invests 
+                exclusively in enterprise software, I also performed supplementary research on the 
+                technology and software industry and find macroeconomic data for the Quarterly Investor Letter."
 
-- title: Social Solutions Global
+- title: Customer and Prospect Database Intern, Social Solutions Global
   from: September 2019
   to: January 2020
-  description: "* Customer and Prospect Database Intern
-              * Researched competitors and high-potential markets in the nonprofit data management space.
-              * Compiled and wrote internal reports assessing market potential of client bases for the Senior Leadership Team.
-              * Cleaned, merged, and analyzed client datasets in R programming language for the Product and Data Science teams."
+  description: "My work centered itself around researching high-potential markets, competitors, and existing 
+                clients to help the company identify unmet needs and improve our products. I summarized these 
+                findings in internal research reports for the Senior Leadership Team.
+
+                While my job description focused on market research, I also worked with the Product and Data 
+                Science teams to merge, clean, and analyze client datasets. I primarily used R when working 
+                with the large datasets, but occasionally used Excel for less intensive tasks.
+
+                In addition to the research and data components of my role, I also maintained internal 
+                databases to ensure that our Sales, Product, and Marketing teams could seamlessly access any 
+                relevant information."
               
