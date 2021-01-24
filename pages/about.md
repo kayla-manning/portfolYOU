@@ -1,8 +1,8 @@
 ---
 layout: page
 title: "About"
-permalink: /
-weight: 3
+permalink: /about/
+weight: 1
 ---
 
 {% include landing.html %}

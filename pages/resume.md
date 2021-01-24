@@ -2,7 +2,7 @@
 layout: page
 title: "Resume"
 permalink: /resume/
-weight: 3
+weight: 4
 ---
 
 <html>
