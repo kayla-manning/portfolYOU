@@ -2,10 +2,20 @@
   from: September 2018
   to: December 2022
   description: "* Mindich Course Fellow, GOV 50 Data
+  
               * Contributing Writer, Harvard Open Data Project
+              
               * Student Advisory Board Member, Harvard Memorial Church
+              
               * Peer Counselor, Harvard Eating Concerns Hotline and Outreach
+          
               * Student-Faculty Committee on Dining Member"
+- title: Research Assistant, Partisan Segregation Project
+  from: January 2021
+  to: present
+  description: "As part of this project, I match voter file lists with election data as part of a larger project with the intent to measure and map segregation between partisans at any level of geography in the United States.
+
+                This project allows me to expand upon my existing data wrangling, web scraping, and other big data skills in R."
               
 - title: Vista Equity Partners
   from: June 2020
