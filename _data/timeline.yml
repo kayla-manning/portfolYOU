@@ -19,14 +19,14 @@
 
 - title: Course Assistant, GOV 50 Data
   from: August 2020
-  to: December 2020
-  description: "I worked as a course assistant for GOV 50, an introductory data science course 
-                in tidyverse R that culminates in a large final project in which students 
-                create Shiny apps to display their own analysis of a large dataset that they 
-                sourced and cleaned. As a Mindich Course Fellow, I connected students with policymakers, 
-                nonprofits, or other stakeholders to maximize the impact of their work. In addition to my 
-                unique roles for the fellowship program, I also provided assistance in lectures 
-                and held regular office hours."
+  to: present
+  description: "GOV 50: Data teaches students introductory data science skills using R tidyverse. 
+                The course culminates in a large final project where students create Shiny apps to 
+                display their own analysis of a large dataset that they sourced and cleaned. As a 
+                Mindich Course Fellow in Fall 2020, I connected students with policymakers, nonprofits, 
+                or other stakeholders to maximize the impact of their work. In addition to my unique 
+                roles for the fellowship program, I also provided assistance in lectures and held 
+                regular office hours."
                 
 - title: Summer Analyst, Vista Equity Partners
   from: June 2020
