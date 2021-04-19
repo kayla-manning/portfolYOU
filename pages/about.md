@@ -10,7 +10,7 @@ weight: 1
 # **About Me**
 
 Hi, I am **{{ site.author.name }}** :wave:,<br>
-I am a junior at Harvard pursuing a joint concentration in Statistics and Government with a secondary in Global Health and Health Policy. Above all, I am passionate about applying data science and quantitative principles to problems in social science.
+I am a junior at Harvard pursuing a joint concentration in Statistics and Government with a secondary in Global Health and Health Policy. 
 
 <div class="row">
 {% include about/skills.html title="Programming Skills" source=site.data.programming-skills %}
