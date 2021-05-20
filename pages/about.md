@@ -9,7 +9,7 @@ weight: 1
 
 # **About Me**
 
-Hi, I am **{{ site.author.name }}** :wave:,<br>
+Hi, I am **{{ site.author.name }}**.<br>
 I am a junior at Harvard pursuing a joint concentration in Statistics and Government with a secondary in Global Health and Health Policy. 
 
 <div class="row">
